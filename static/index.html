@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>solscope</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <h1>solscope</h1>
+    <div id="status-line" class="status">connecting…</div>
+  </header>
+
+  <div id="progress-wrap">
+    <div id="progress-bar"></div>
+  </div>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="contention">Contention</button>
+    <button class="tab" data-tab="ohlcv">OHLCV</button>
+    <button class="tab" data-tab="pipeline">Pipeline</button>
+  </nav>
+
+  <main>
+    <section id="tab-contention" class="panel">
+      <div class="controls">
+        <label>From slot <input type="number" id="from-slot" placeholder="auto"></label>
+        <label>To slot <input type="number" id="to-slot" placeholder="auto"></label>
+        <button id="reload-contention">Reload</button>
+      </div>
+
+      <div id="contention-summary" class="cards"></div>
+
+      <div class="grid">
+        <div class="card">
+          <h2>Schedule depth distribution</h2>
+          <table id="depth-hist"><tbody></tbody></table>
+        </div>
+        <div class="card">
+          <h2>Most contended accounts</h2>
+          <div class="scroll">
+            <table id="top-accounts">
+              <thead><tr><th>Account</th><th>Delays</th><th>Write locks</th><th>Read locks</th><th>Slots</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Programs behind the conflicts</h2>
+          <div class="scroll">
+            <table id="top-programs">
+              <thead><tr><th>Program</th><th>Delays</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Per-slot schedule</h2>
+        <p class="hint">Parallelism is transactions ÷ depth. Vote transactions rarely
+          conflict, so the columns without them show how much real contention there is.</p>
+        <div class="scroll tall">
+          <table id="slot-table">
+            <thead>
+              <tr>
+                <th>Slot</th><th>Txs</th><th>Depth</th><th>Parallelism</th>
+                <th>Txs (no votes)</th><th>Depth (no votes)</th><th>Parallelism (no votes)</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-ohlcv" class="panel hidden">
+      <div class="controls">
+        <label>Token
+          <select id="mint-select"></select>
+        </label>
+        <label>Interval
+          <select id="interval-select">
+            <option value="1m">1 minute</option>
+            <option value="5m">5 minute</option>
+          </select>
+        </label>
+        <span id="candle-info" class="hint"></span>
+      </div>
+
+      <div class="card">
+        <canvas id="chart" width="1200" height="460"></canvas>
+      </div>
+
+      <div class="card">
+        <h2>Indexed tokens</h2>
+        <div class="scroll tall">
+          <table id="token-table">
+            <thead><tr><th>Mint</th><th>Trades</th><th>Volume (SOL)</th><th>Last price (SOL)</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-pipeline" class="panel hidden">
+      <div id="pipeline-cards" class="cards"></div>
+      <div class="card">
+        <h2>Trades excluded by the OHLCV model</h2>
+        <p class="hint">Transactions the balance-delta model deliberately does not price.</p>
+        <table id="exclusions"><tbody></tbody></table>
+      </div>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
